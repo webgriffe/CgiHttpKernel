@@ -1,11 +1,15 @@
 {
-    "name": "igorw/cgi-http-kernel",
-    "description": "Adapter from HttpKernelInterface to CGI.",
+    "name": "webgriffe/cgi-http-kernel",
+    "description": "Adapter from HttpKernelInterface to CGI. Originally was igorw/cgi-http-kerl which is abandoned.",
     "license": "MIT",
     "authors": [
         {
             "name": "Igor Wiedler",
             "email": "igor@wiedler.ch"
+        },
+        {
+            "name": "Webgriffe SRL",
+            "email": "support@webgriffe.com"
         }
     ],
     "require": {
