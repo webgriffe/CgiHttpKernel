@@ -69,8 +69,8 @@ class CgiHttpKernel implements HttpKernelInterface
             ->setEnv('CONTENT_TYPE', $request->headers->get('Content-Type'))
             ->setEnv('SYMFONY_ATTRIBUTES', serialize($request->attributes->all()));
 
-        $cookie = $this->getUrlEncodedParameterBag($request->cookies);
-        $builder->setEnv('HTTP_COOKIE', $cookie);
+        $cookieString = $this->convertCookiesListToString($request->cookies->all());
+        $builder->setEnv('HTTP_COOKIE', $cookieString);
 
         $process = $builder->getProcess();
         $process->start();
@@ -258,5 +258,18 @@ class CgiHttpKernel implements HttpKernelInterface
     private function getMimeBoundary()
     {
         return md5('cgi-http-kernel');
+    }
+
+    /**
+     * @param string[] $cookies
+     * @return string
+     */
+    private function convertCookiesListToString($cookies)
+    {
+        $stringArr = [];
+        foreach ($cookies as $key => $value) {
+            $stringArr[] = $key . '=' . $value;
+        }
+        return implode('; ', $stringArr);
     }
 }
