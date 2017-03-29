@@ -35,29 +35,44 @@ line, parse the output, and return a `Response` instance.
 
 For example:
 
-    $kernel = new CgiHttpKernel(__DIR__.'/../phpBB');
+```php
+$kernel = new CgiHttpKernel(__DIR__.'/../phpBB');
 
-    $request = Request::create('/index.php');
-    $response = $kernel->handle($request);
+$request = Request::create('/index.php');
+$response = $kernel->handle($request);
 
-    var_dump($response->getContent());
+var_dump($response->getContent());
+```
 
 You can also pass a second argument to the constructor if you want all
 requests to go through a front controller.
 
-    $kernel = new CgiHttpKernel(__DIR__.'/../web', 'app.php');
+```php
+$kernel = new CgiHttpKernel(__DIR__.'/../web', 'app.php');
 
-    $request = Request::create('/foo');
-    $response = $kernel->handle($request);
+$request = Request::create('/foo');
+$response = $kernel->handle($request);
+```
+    
+You can also set the php-cgi binary path and a process timeout (which by default is set to 60 seconds):
+
+```php
+$kernel = new CgiHttpKernel(__DIR__.'/../web', 'app.php', '/path/to/php-cgi', 300);
+
+// Or set the timeout to null to disable the timeout at all
+$kernel = new CgiHttpKernel(__DIR__.'/../web', 'app.php', '/path/to/php-cgi', null);
+```
 
 The real power however comes from using libraries that integrate with the
 HttpKernelInterface, such as `Symfony\Component\HttpKernel\Client`.
 
-    $kernel = new CgiHttpKernel(__DIR__.'/../phpBB');
-    $client = new Client($kernel);
+```php
+$kernel = new CgiHttpKernel(__DIR__.'/../phpBB');
+$client = new Client($kernel);
 
-    $crawler = $client->request('GET', '/index.php');
-    $this->assertGreaterThan(0, $crawler->filter('.topiclist')->count());
+$crawler = $client->request('GET', '/index.php');
+$this->assertGreaterThan(0, $crawler->filter('.topiclist')->count());
+```
 
 ## Is it really a lie?
 
