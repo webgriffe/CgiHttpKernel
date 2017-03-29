@@ -13,15 +13,36 @@ use Symfony\Component\Process\ProcessBuilder;
 
 class CgiHttpKernel implements HttpKernelInterface
 {
+    /**
+     * @var string
+     */
     private $rootDir;
+    /**
+     * @var string
+     */
     private $frontController;
+    /**
+     * @var string
+     */
     private $phpCgiBin;
+    /**
+     * @var int|null
+     */
+    private $cgiTimeout;
 
-    public function __construct($rootDir, $frontController = null, $phpCgiBin = null)
+    /**
+     * CgiHttpKernel constructor.
+     * @param $rootDir
+     * @param null $frontController
+     * @param null $phpCgiBin
+     * @param int|null $cgiTimeout Set null to disable the CGI process timeout.
+     */
+    public function __construct($rootDir, $frontController = null, $phpCgiBin = null, $cgiTimeout = 60)
     {
         $this->rootDir = $rootDir;
         $this->frontController = $frontController;
         $this->phpCgiBin = $phpCgiBin ?: 'php-cgi';
+        $this->cgiTimeout = $cgiTimeout;
     }
 
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
@@ -42,6 +63,7 @@ class CgiHttpKernel implements HttpKernelInterface
         }
 
         $builder = ProcessBuilder::create()
+            ->setTimeout($this->cgiTimeout)
             ->add($this->phpCgiBin)
             ->add('-d expose_php=Off')
             ->add('-d cgi.force_redirect=Off')
@@ -233,11 +255,15 @@ class CgiHttpKernel implements HttpKernelInterface
         $content = file_get_contents($file);
 
         $data = '';
-        $data .= sprintf('Content-Disposition: form-data; name="%s"; filename="%s"'.$eol,
-                         $name,
-                         $file->getClientOriginalName());
-        $data .= sprintf('Content-Type: %s'.$eol,
-                         $file->getClientMimeType());
+        $data .= sprintf(
+            'Content-Disposition: form-data; name="%s"; filename="%s"' . $eol,
+            $name,
+            $file->getClientOriginalName()
+        );
+        $data .= sprintf(
+            'Content-Type: %s' . $eol,
+            $file->getClientMimeType()
+        );
         $data .= 'Content-Transfer-Encoding: base64'.$eol.$eol;
         $data .= chunk_split(base64_encode($content)).$eol;
 
